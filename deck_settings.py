@@ -28,8 +28,11 @@ def adjust_ease_factors(deck_id):
     card_ids = mw.col.find_cards(f'deck:"{deck_name}"')
     for card_id in card_ids:
         card = mw.col.getCard(card_id)
-        card.factor = autoEaseFactor.suggested_factor(card)
-        card.flush()
+        deck_id = card.did
+        config = autoEaseFactor.get_current_config(deck_id)
+        if config['enabled'] and (card.queue == 2 or not config['reviews_only']):
+            card.factor = autoEaseFactor.suggested_factor(card)
+            card.flush() #don't inherit from the selected parent deck
     announce("Ease adjustment complete!")
 
 
